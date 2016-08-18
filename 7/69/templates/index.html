@@ -1,0 +1,69 @@
+﻿<html>
+	<head>
+		<title>Artist</title>
+	</head>
+	<body>
+		<form action="/" method="post">
+			<table id="input-table">
+				<tbody>
+					<tr>
+						<td><label for="artist-name">アーティスト名</label></td>
+						<td><input name="artist-name" type="text" value="{{ form['artist-name'] if form}}"/></td>
+					</tr>
+					<tr>
+						<td><label for="artist-alias">アーティスト別名</label></td>
+						<td><input name="artist-alias" type="text" value="{{ form['artist-alias'] if form }}"/></td>
+					</tr>
+					<tr>
+						<td><label for="tags">タグ</label></td>
+						<td><input name="tags" type="text" value="{{ form['tags'] if form }}"/></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<input type="submit" name="action" value="search"/>
+		</form>
+		
+		<!-- result -->
+		{% if is_result %}
+			<table id="output-table" border>
+				<thead>
+					<th>アーティスト名</th>
+					<th>アーティスト別名</th>
+					<th>活動場所</th>
+					<th>活動開始日</th>
+					<th>活動終了日</th>
+					<th>タグ</th>
+					<th>レーティング</th>
+				</thead>
+				<tbody>
+					{% for artist in artists %}
+					<tr>
+						<td>{{ artist.name }}</td>
+						<td>{{ artist.aliases|default([{'name' : 'N/A'}])|join(', ', attribute='name') }}</td>
+						<td>{{ artist.area if artist.area else 'N/A' }}</td>
+						<td>
+							{% if artist.begin is defined %}
+								{{ artist.begin.year|default('-') }}年{{ artist.begin.month|default('-') }}月{{ artist.begin.date|default('-') }}日
+							{% else %}
+								-年-月-日
+							{% endif %}
+						</td>
+						<td>
+							{% if artist.end is defined %}
+								{{ artist.end.year|default('-') }}年{{ artist.end.month|default('-') }}月{{ artist.end.date|default('-') }}日
+							{% else %}
+								-年-月-日
+							{% endif %}
+						</td>
+						<td>{{ artist.tags|default([{'value' : 'N/A'}])|join(', ', attribute='value') }}</td>
+						<td>{{ artist.rating.value if artist.rating else 'N/A' }}</td>
+					</tr>
+					{% else %}
+						<td colspan=7 >見つかれません</td>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% endif %}
+	</body>
+</html>
